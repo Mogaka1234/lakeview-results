@@ -1,8 +1,11 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.pool import StaticPool
 
-SQLALCHEMY_DATABASE_URL = "sqlite:////dev/shm/lakeview_results.db"
+# Use a local file that works on Railway (and locally)
+DB_PATH = os.environ.get("DATABASE_PATH", "lakeview_results.db")
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,

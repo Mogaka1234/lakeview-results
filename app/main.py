@@ -15,7 +15,7 @@ from .auth import get_current_user, create_access_token, get_password_hash
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Lakeview Junior School Results System")
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 jinja_env = Environment(
