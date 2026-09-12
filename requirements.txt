@@ -1,0 +1,12 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+sqlalchemy>=2.0
+python-multipart
+jinja2
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+reportlab
+pydantic-settings
+aiofiles
+python-dotenv

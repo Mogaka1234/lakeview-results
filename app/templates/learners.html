@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-2xl font-bold">Learners</h2>
+</div>
+
+<form method="get" class="mb-4">
+  <select name="stream_id" onchange="this.form.submit()" class="border rounded-lg px-3 py-2 text-sm">
+    <option value="">All my streams</option>
+    {% for s in streams %}
+    <option value="{{ s.id }}" {% if selected_stream == s.id %}selected{% endif %}>{{ s.name }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+<div class="bg-white rounded-xl shadow p-4 mb-6">
+  <h3 class="font-semibold mb-3">Register New Learner</h3>
+  <form method="post" action="/learners/add" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <input name="admission_no" required placeholder="Admission No" class="border rounded-lg px-3 py-2">
+    <input name="first_name" required placeholder="First Name" class="border rounded-lg px-3 py-2">
+    <input name="last_name" required placeholder="Last Name" class="border rounded-lg px-3 py-2">
+    <select name="gender" class="border rounded-lg px-3 py-2">
+      <option value="">Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <select name="stream_id" required class="border rounded-lg px-3 py-2">
+      <option value="">Select Stream</option>
+      {% for s in streams %}
+      <option value="{{ s.id }}">{{ s.name }} (Grade {{ s.grade }})</option>
+      {% endfor %}
+    </select>
+    <input name="parent_name" placeholder="Parent / Guardian Name" class="border rounded-lg px-3 py-2">
+    <input name="parent_phone" placeholder="Parent Phone" class="border rounded-lg px-3 py-2">
+    <button type="submit" class="sm:col-span-2 bg-blue-700 text-white py-2 rounded-lg font-semibold">Add Learner</button>
+  </form>
+</div>
+
+<div class="bg-white rounded-xl shadow overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-3 py-2 text-left">Adm No</th>
+          <th class="px-3 py-2 text-left">Name</th>
+          <th class="px-3 py-2 text-left">Stream</th>
+          <th class="px-3 py-2 text-left">View Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in learners %}
+        <tr class="border-t">
+          <td class="px-3 py-2">{{ l.admission_no }}</td>
+          <td class="px-3 py-2">{{ l.first_name }} {{ l.last_name }}</td>
+          <td class="px-3 py-2">{{ l.stream.name if l.stream else '-' }}</td>
+          <td class="px-3 py-2 font-mono font-bold text-green-700">{{ l.view_code }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="px-3 py-6 text-center text-gray-500">No learners yet</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

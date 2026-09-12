@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Teacher Assignments</h2>
+
+<div class="grid md:grid-cols-2 gap-6">
+  <!-- Class streams -->
+  <div class="bg-white rounded-xl shadow p-4">
+    <h3 class="font-semibold mb-3">Assign Class Teacher (Stream)</h3>
+    <form method="post" action="/assignments/stream" class="flex flex-col gap-2 mb-4">
+      <select name="teacher_id" required class="border rounded-lg px-3 py-2">
+        <option value="">Teacher</option>
+        {% for t in teachers %}<option value="{{ t.id }}">{{ t.full_name }}</option>{% endfor %}
+      </select>
+      <select name="stream_id" required class="border rounded-lg px-3 py-2">
+        <option value="">Stream</option>
+        {% for s in streams %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+      </select>
+      <button class="bg-blue-700 text-white py-2 rounded-lg">Assign Stream</button>
+    </form>
+    <ul class="text-sm space-y-1">
+      {% for ts in teacher_streams %}
+      <li class="flex justify-between items-center border-t py-1">
+        <span>{{ ts.teacher.full_name if ts.teacher else '?' }} → {{ ts.stream.name if ts.stream else '?' }}</span>
+        <form method="post" action="/assignments/stream/remove/{{ ts.id }}">
+          <button class="text-red-600 text-xs">Remove</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Subjects -->
+  <div class="bg-white rounded-xl shadow p-4">
+    <h3 class="font-semibold mb-3">Assign Subject to Teacher</h3>
+    <form method="post" action="/assignments/subject" class="flex flex-col gap-2 mb-4">
+      <select name="teacher_id" required class="border rounded-lg px-3 py-2">
+        <option value="">Teacher</option>
+        {% for t in teachers %}<option value="{{ t.id }}">{{ t.full_name }}</option>{% endfor %}
+      </select>
+      <select name="subject_id" required class="border rounded-lg px-3 py-2">
+        <option value="">Subject</option>
+        {% for s in subjects %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+      </select>
+      <button class="bg-blue-700 text-white py-2 rounded-lg">Assign Subject</button>
+    </form>
+    <ul class="text-sm space-y-1">
+      {% for ts in teacher_subjects %}
+      <li class="flex justify-between items-center border-t py-1">
+        <span>{{ ts.teacher.full_name if ts.teacher else '?' }} → {{ ts.subject.name if ts.subject else '?' }}</span>
+        <form method="post" action="/assignments/subject/remove/{{ ts.id }}">
+          <button class="text-red-600 text-xs">Remove</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

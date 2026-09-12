@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center mb-6">
+  <h2 class="text-2xl font-bold">{{ learner.first_name }} {{ learner.last_name }}</h2>
+  <p class="text-gray-600">{{ learner.admission_no }} &bull; {{ learner.stream.name if learner.stream else '' }}</p>
+</div>
+
+{% if marks %}
+<div class="space-y-3">
+  {% for m in marks %}
+  <div class="bg-white rounded-xl shadow p-4">
+    <div class="font-semibold">{{ m.assessment.subject.name if m.assessment and m.assessment.subject else 'Subject' }}</div>
+    <div class="text-sm text-gray-500 mb-1">
+      {{ m.assessment.name if m.assessment else '' }} &bull;
+      {{ m.assessment.term.name if m.assessment and m.assessment.term else '' }}
+    </div>
+    <div class="flex justify-between items-center">
+      <span class="text-lg font-bold">{{ "%.1f"|format(m.score) }}%</span>
+      <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">{{ m.level }}</span>
+    </div>
+    <div class="text-xs text-gray-500 mt-1">{{ get_level_description(m.level) }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-center text-gray-500 py-10">No results recorded yet for this learner.</p>
+{% endif %}
+
+<div class="mt-8 text-center">
+  <a href="/parent" class="text-blue-600">Enter another code</a>
+</div>
+{% endblock %}

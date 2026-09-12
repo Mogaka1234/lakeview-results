@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Subjects</h2>
+
+<div class="bg-white rounded-xl shadow p-4 mb-6">
+  <h3 class="font-semibold mb-3">Add Subject</h3>
+  <form method="post" action="/subjects/add" class="flex flex-col sm:flex-row gap-3">
+    <input name="name" required placeholder="Subject Name" class="border rounded-lg px-3 py-2 flex-1">
+    <input name="code" placeholder="Code (e.g. MAT)" class="border rounded-lg px-3 py-2 w-28">
+    <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">Add</button>
+  </form>
+</div>
+
+<div class="bg-white rounded-xl shadow overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-3 py-2 text-left">Name</th>
+        <th class="px-3 py-2 text-left">Code</th>
+        <th class="px-3 py-2 text-left">Status</th>
+        <th class="px-3 py-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in subjects %}
+      <tr class="border-t">
+        <td class="px-3 py-2">{{ s.name }}</td>
+        <td class="px-3 py-2">{{ s.code or '-' }}</td>
+        <td class="px-3 py-2">
+          {% if s.is_active %}
+          <span class="text-green-600">Active</span>
+          {% else %}
+          <span class="text-red-500">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 text-right">
+          <form method="post" action="/subjects/{{ s.id }}/toggle" class="inline">
+            <button class="text-blue-600 text-xs">Toggle</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4"><a href="javascript:history.back()" class="text-blue-600 text-sm">&larr; Back</a></div>
+<h2 class="text-xl font-bold mb-1">Report Comments</h2>
+<p class="text-gray-600 text-sm mb-6">{{ learner.first_name }} {{ learner.last_name }} • {{ term.name }}</p>
+
+<form method="post" class="bg-white rounded-xl shadow p-5 space-y-4">
+  <div>
+    <label class="block text-sm font-medium mb-1">Class Teacher Comment</label>
+    <textarea name="class_teacher_comment" rows="3" class="w-full border rounded-lg px-3 py-2"
+      {% if user.role not in ['teacher','admin','dos'] %}readonly{% endif %}>{{ rc.class_teacher_comment if rc else '' }}</textarea>
+  </div>
+  <div>
+    <label class="block text-sm font-medium mb-1">Director of Studies Comment</label>
+    <textarea name="dos_comment" rows="3" class="w-full border rounded-lg px-3 py-2"
+      {% if user.role not in ['dos','admin'] %}readonly{% endif %}>{{ rc.dos_comment if rc else '' }}</textarea>
+  </div>
+  <div>
+    <label class="block text-sm font-medium mb-1">Principal Comment</label>
+    <textarea name="principal_comment" rows="3" class="w-full border rounded-lg px-3 py-2"
+      {% if user.role != 'admin' %}readonly{% endif %}>{{ rc.principal_comment if rc else '' }}</textarea>
+  </div>
+  <button type="submit" class="w-full bg-blue-700 text-white py-3 rounded-lg font-semibold">Save Comments</button>
+</form>
+{% endblock %}

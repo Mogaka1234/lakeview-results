@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-sm mx-auto mt-8">
+  <h2 class="text-2xl font-bold text-center mb-2">Parent / Learner View</h2>
+  <p class="text-center text-gray-600 mb-6 text-sm">Enter the unique View Code given by the school</p>
+  {% if error %}
+  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="/parent/view" class="bg-white p-6 rounded-xl shadow space-y-4">
+    <div>
+      <label class="block text-sm font-medium mb-1">View Code</label>
+      <input type="text" name="view_code" required placeholder="e.g. A3K9M2X7"
+             class="w-full border rounded-lg px-3 py-3 text-center text-lg tracking-widest uppercase focus:ring-2 focus:ring-green-500 outline-none">
+    </div>
+    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">View Results</button>
+  </form>
+</div>
+{% endblock %}

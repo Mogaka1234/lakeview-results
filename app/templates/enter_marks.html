@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4">
+  <a href="/assessments" class="text-blue-600 text-sm">&larr; Back to Assessments</a>
+</div>
+<h2 class="text-xl font-bold mb-1">{{ assessment.name }}</h2>
+<p class="text-gray-600 text-sm mb-2">
+  {{ assessment.subject.name }} &bull; {{ assessment.term.name }} &bull; Max: {{ assessment.max_score }}
+  &bull; Status: <span class="font-semibold
+    {% if assessment.status == 'countersigned' %}text-green-700
+    {% elif assessment.status == 'submitted' %}text-yellow-700
+    {% else %}text-gray-600{% endif %}">{{ assessment.status|upper }}</span>
+</p>
+
+<!-- Stream filter -->
+<form method="get" class="mb-4 flex flex-wrap gap-2 items-center">
+  <label class="text-sm font-medium">Filter by Stream:</label>
+  <select name="stream_id" onchange="this.form.submit()" class="border rounded-lg px-3 py-2 text-sm">
+    <option value="">All my streams</option>
+    {% for s in streams %}
+    <option value="{{ s.id }}" {% if selected_stream == s.id %}selected{% endif %}>{{ s.name }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+{% if assessment.status == 'countersigned' %}
+<div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 mb-4 text-sm">
+  This assessment has been countersigned and is locked. Marks cannot be changed.
+</div>
+{% endif %}
+
+<form method="post" action="/marks/save/{{ assessment.id }}">
+  {% if selected_stream %}<input type="hidden" name="stream_id" value="{{ selected_stream }}">{% endif %}
+  <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-100 sticky top-0">
+          <tr>
+            <th class="px-2 py-2 text-left">Adm No</th>
+            <th class="px-2 py-2 text-left">Name</th>
+            <th class="px-2 py-2 text-left">Stream</th>
+            <th class="px-2 py-2 text-left w-24">Score</th>
+            <th class="px-2 py-2 text-left">Level</th>
+            <th class="px-2 py-2 text-left">Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for l in learners %}
+          {% set m = existing.get(l.id) %}
+          <tr class="border-t">
+            <td class="px-2 py-2">{{ l.admission_no }}</td>
+            <td class="px-2 py-2">{{ l.first_name }} {{ l.last_name }}</td>
+            <td class="px-2 py-2">{{ l.stream.name if l.stream else '' }}</td>
+            <td class="px-2 py-2">
+              <input type="number" name="score_{{ l.id }}" step="0.5" min="0" max="{{ assessment.max_score }}"
+                     value="{{ m.score if m else '' }}"
+                     {% if assessment.status == 'countersigned' %}readonly{% endif %}
+                     class="w-20 border rounded px-2 py-1 text-center"
+                     oninput="updateLevel(this, {{ assessment.max_score }})">
+            </td>
+            <td class="px-2 py-2 font-semibold level-cell">{% if m %}{{ m.level }}{% endif %}</td>
+            <td class="px-2 py-2">
+              <input type="text" name="comment_{{ l.id }}" value="{{ m.comment if m and m.comment else '' }}"
+                     {% if assessment.status == 'countersigned' %}readonly{% endif %}
+                     placeholder="Optional" class="w-full border rounded px-2 py-1 text-xs">
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">No learners in selected stream(s)</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% if assessment.status != 'countersigned' %}
+  <div class="mt-4 sticky bottom-4 flex gap-2">
+    <button type="submit" class="flex-1 bg-blue-700 text-white py-3 rounded-xl font-semibold shadow-lg">Save Marks</button>
+  </div>
+  {% endif %}
+</form>
+
+<script>
+function getLevel(pct) {
+  if (pct >= 90) return "EE1"; if (pct >= 75) return "EE2";
+  if (pct >= 65) return "ME1"; if (pct >= 50) return "ME2";
+  if (pct >= 35) return "AE1"; if (pct >= 20) return "AE2";
+  if (pct >= 10) return "BE1"; return "BE2";
+}
+function updateLevel(input, maxScore) {
+  const cell = input.closest("tr").querySelector(".level-cell");
+  const val = parseFloat(input.value);
+  if (isNaN(val)) { cell.textContent = ""; return; }
+  cell.textContent = getLevel((val / maxScore) * 100);
+}
+</script>
+{% endblock %}

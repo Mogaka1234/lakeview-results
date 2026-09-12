@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Assessments</h2>
+
+<div class="bg-white rounded-xl shadow p-4 mb-6">
+  <h3 class="font-semibold mb-3">Create New Assessment</h3>
+  <form method="post" action="/assessments/add" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <input name="name" required placeholder="e.g. CAT 1, Mid-Term Exam" class="border rounded-lg px-3 py-2">
+    <select name="assessment_type" class="border rounded-lg px-3 py-2">
+      <option value="CAT">CAT</option>
+      <option value="Exam">Exam</option>
+      <option value="Project">Project</option>
+      <option value="Practical">Practical</option>
+    </select>
+    <select name="subject_id" required class="border rounded-lg px-3 py-2">
+      <option value="">Select Subject (your subjects only)</option>
+      {% for s in subjects %}
+      <option value="{{ s.id }}">{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="term_id" required class="border rounded-lg px-3 py-2">
+      <option value="">Select Term</option>
+      {% for t in terms %}
+      <option value="{{ t.id }}">{{ t.name }} {% if t.academic_year %}({{ t.academic_year.year }}){% endif %}</option>
+      {% endfor %}
+    </select>
+    <input name="max_score" type="number" value="100" step="0.5" class="border rounded-lg px-3 py-2" placeholder="Max Score">
+    <button type="submit" class="sm:col-span-2 bg-blue-700 text-white py-2 rounded-lg font-semibold">Create Assessment</button>
+  </form>
+</div>
+
+<div class="space-y-3">
+  {% for a in assessments %}
+  <div class="bg-white rounded-xl shadow p-4">
+    <div class="flex justify-between items-start gap-2">
+      <div>
+        <div class="font-semibold">{{ a.name }}</div>
+        <div class="text-sm text-gray-500">
+          {{ a.subject.name if a.subject else '' }} &bull;
+          {{ a.term.name if a.term else '' }} &bull; Max: {{ a.max_score }}
+        </div>
+        <div class="text-xs mt-1">
+          Status:
+          <span class="font-semibold
+            {% if a.status == 'countersigned' %}text-green-700
+            {% elif a.status == 'submitted' %}text-yellow-600
+            {% else %}text-gray-500{% endif %}">{{ a.status|upper }}</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <a href="/marks/enter/{{ a.id }}" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg text-center">Enter Marks</a>
+        {% if a.status == 'draft' %}
+        <form method="post" action="/assessments/{{ a.id }}/submit">
+          <button class="w-full bg-yellow-500 text-white text-xs px-3 py-1.5 rounded-lg">Submit for Countersign</button>
+        </form>
+        {% endif %}
+        {% if a.status == 'submitted' and user.role in ['admin', 'dos'] %}
+        <form method="post" action="/assessments/{{ a.id }}/countersign">
+          <button class="w-full bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg">Countersign (OK)</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class="text-center text-gray-500 py-8">No assessments yet. Create one above.</p>
+  {% endfor %}
+</div>
+{% endblock %}
